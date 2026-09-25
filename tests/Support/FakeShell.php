@@ -233,7 +233,19 @@ final class FakeShell implements Shell
                 "web/themes/custom/$theme/templates/layout/page.html.twig",
                 "<main>\n  {{ page.content }}\n</main>\n",
             );
-            $this->write($cwd, "web/themes/custom/$theme/$theme.info.yml", "name: fake\ntype: theme\n");
+            // The shape starterkit_theme 11.4 writes, reduced to the keys mfd edits.
+            $name = $args[5] ?? $theme;
+            $this->write($cwd, "web/themes/custom/$theme/$theme.info.yml", sprintf(
+                "name: '%s'\ntype: theme\n'base theme': false\nversion: 1.0.0\nlibraries:\n  - %s/base\n"
+                    . "  - core/normalize\ndescription: ''\ncore_version_requirement: ^11\n",
+                str_replace("'", "''", $name),
+                $theme,
+            ));
+            $this->write(
+                $cwd,
+                "web/themes/custom/$theme/$theme.libraries.yml",
+                "base:\n  version: VERSION\n  css:\n    component:\n      css/components/button.css: {}\n",
+            );
         }
 
         return '';

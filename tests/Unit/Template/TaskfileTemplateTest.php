@@ -106,6 +106,18 @@ final class TaskfileTemplateTest extends RenderedTemplateTestCase
      * qa:review is advisory (qa.yml: "nothing here blocks a merge"), including inside `task check`.
      * A design review with non-critical findings exits non-zero; `check` must not fail because of it.
      */
+    /**
+     * Every task depends on `up`. Without a status check, each one runs `ddev start`, which
+     * rebuilds the images (seconds per task) even when the project is already running.
+     */
+    public function testUpIsSkippedWhenTheProjectIsAlreadyRunning(): void
+    {
+        self::assertStringContainsString(
+            "      - ddev start\n    status:\n      - ddev exec true >/dev/null 2>&1\n",
+            $this->read('Taskfile.yml'),
+        );
+    }
+
     public function testCheckDoesNotFailWhenTheDesignReviewFindsNonCriticalIssues(): void
     {
         self::assertStringContainsString(
