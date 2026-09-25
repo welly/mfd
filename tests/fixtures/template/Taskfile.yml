@@ -1,0 +1,6 @@
+vars:
+  THEME: {{THEME}}
+tasks:
+  t:
+    cmds:
+      - echo {{.CLI_ARGS}} {{PROJECT}} "{{SITE_NAME}}" "{{THEME_LABEL}}"

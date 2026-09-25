@@ -1,0 +1,7 @@
+/tests export-ignore
+/docs/superpowers export-ignore
+/.superpowers export-ignore
+/phpunit.xml.dist export-ignore
+/phpcs.xml.dist export-ignore
+/phpstan.neon.dist export-ignore
+/Taskfile.yml export-ignore

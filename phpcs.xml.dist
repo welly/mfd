@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="mfd">
+  <description>PSR-12 for the mfd tool. template/ holds generated-project files with placeholders and is not linted here.</description>
+  <file>bin/mfd</file>
+  <file>src</file>
+  <file>tests</file>
+  <exclude-pattern>tests/fixtures/*</exclude-pattern>
+  <arg name="colors"/>
+  <arg value="s"/>
+  <rule ref="PSR12"/>
+</ruleset>

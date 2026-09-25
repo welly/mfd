@@ -1,0 +1,18 @@
+#!/bin/sh
+# Fake `ddev` for SetupSiteRestoreTest (F2): runs the real `task setup` against a rendered
+# Taskfile.yml, so only `drush site:install` needs faking. Controlled via env vars:
+#   FAKE_DDEV_EXIT=<n>       exit code for `drush site:install` (default 0)
+#   FAKE_DDEV_LEAK=1         rewrite settings.php before exiting, like a real installer leak
+#   FAKE_DDEV_BREAK_DIR=1    make web/sites/default unsearchable afterwards, so the restore's
+#                            own chmod/cp cannot resolve settings.php any more
+if [ "$1" = "drush" ] && [ "$2" = "site:install" ]; then
+  touch .fake-site-install-ran
+  if [ "${FAKE_DDEV_LEAK:-0}" = "1" ]; then
+    printf '\n// leaked secret\n' >> web/sites/default/settings.php
+  fi
+  if [ "${FAKE_DDEV_BREAK_DIR:-0}" = "1" ]; then
+    chmod 0000 web/sites/default
+  fi
+  exit "${FAKE_DDEV_EXIT:-0}"
+fi
+exit 0

@@ -1,0 +1,24 @@
+# Design review and harness tasks (qa:*). Advisory: nothing here blocks a merge;
+# merge checks run in CI once the repository is enrolled.
+version: '3'
+
+tasks:
+  review:
+    desc: Full design review (Storybook check, then the site check against DDEV)
+    cmds:
+      - npm run qa:loop
+
+  review:storybook:
+    desc: Storybook check only; no DDEV needed
+    cmds:
+      - QA_DEV_CMD= npm run qa:loop
+
+  review:scoped:
+    desc: Review only what changed on this branch
+    cmds:
+      - npm run qa:loop:scoped
+
+  probe:
+    desc: Show what is left of the harness setup (then run /setup-project in Claude Code)
+    cmds:
+      - python3 "${HARNESS_PROBE:-$HOME/.claude/lib/setup_project_probe.py}" probe --root .

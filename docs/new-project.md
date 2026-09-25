@@ -1,5 +1,13 @@
 # Start a new project
 
+`mfd new` automates an equivalent of the steps on this page. This page remains the manual
+reference: read it if you want to run the steps by hand, or to see what `mfd new` does under the
+hood. A few things differ from the manual steps below:
+
+- `web/sites/default/settings.php` is committed, not gitignored. `mfd new` snapshots it before `drush site:install` runs and restores the exact original bytes afterwards, so the committed file never ends up holding secrets.
+- the card component that `mfd new` (and `mfd make:component`) generates wraps in a `<div>`, not an `<article>`, and declares `attributes` as a typed prop (`Drupal\Core\Template\Attribute`) in `*.component.yml`, alongside `heading` (see `src/Component/ComponentGenerator.php`).
+- `config/sync` is used, and `mfd new` runs `drush config:export` into it, so a clone can be rebuilt with `--existing-config`.
+
 Replace `acme` and `acme_theme` with your project and theme names throughout.
 
 Set the path to the review installer once. It comes from the team's Claude Code harness; the
@@ -39,6 +47,8 @@ EOF
 
 Keep the `node_modules/` line. Without it, the review run lists every installed package as a
 changed file and fails with `ENOBUFS`.
+
+Note: `mfd new` keeps `web/sites/default/settings.php` out of `.gitignore` (only `git init` runs; you review and commit it yourself) and uses `config/sync` for configuration, which differs from the manual `.gitignore` shown here. DDEV's gitignored `settings.ddev.php` holds the credentials and hash salt.
 
 ## 3. Generate your theme from core's starterkit
 

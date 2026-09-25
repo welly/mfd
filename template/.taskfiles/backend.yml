@@ -1,0 +1,124 @@
+# Back-end tasks (be:*). PHP, Composer and Drush always run inside DDEV.
+version: '3'
+
+tasks:
+  install:
+    desc: Install PHP dependencies
+    deps: [':up']
+    cmds:
+      - ddev composer install
+
+  require:
+    desc: 'Add a Composer package, e.g. task be:require -- drupal/pathauto'
+    deps: [':up']
+    cmds:
+      - ddev composer require {{.CLI_ARGS}}
+
+  update:
+    desc: 'Update Composer packages, e.g. task be:update -- drupal/core-*'
+    deps: [':up']
+    cmds:
+      - ddev composer update {{.CLI_ARGS}} --with-all-dependencies
+
+  drush:
+    desc: 'Run Drush, e.g. task be:drush -- status'
+    deps: [':up']
+    cmds:
+      - ddev drush {{.CLI_ARGS}}
+
+  cr:
+    desc: Clear Drupal caches
+    deps: [':up']
+    cmds:
+      - ddev drush cr
+
+  deploy:
+    desc: Run database updates, config import and deploy hooks in core's order
+    deps: [':up']
+    cmds:
+      - ddev drush deploy -y
+
+  cex:
+    desc: Export configuration to config/sync
+    deps: [':up']
+    cmds:
+      - ddev drush config:export -y
+
+  cim:
+    desc: Import configuration from config/sync
+    deps: [':up']
+    cmds:
+      - ddev drush config:import -y
+
+  login:
+    desc: One-time admin login link
+    deps: [':up']
+    cmds:
+      - ddev drush uli
+
+  db:export:
+    desc: 'Export the database (default db.sql.gz, ignored by git), e.g. task be:db:export -- backup.sql.gz'
+    deps: [':up']
+    cmds:
+      - ddev export-db --file={{if .CLI_ARGS}}{{.CLI_ARGS}}{{else}}db.sql.gz{{end}}
+
+  db:import:
+    desc: 'Import a database dump, e.g. task be:db:import -- db.sql.gz'
+    deps: [':up']
+    preconditions:
+      - sh: test -n "{{.CLI_ARGS}}"
+        msg: 'Usage: task be:db:import -- path/to/dump.sql.gz'
+    cmds:
+      - ddev import-db --file={{.CLI_ARGS}}
+
+  logs:
+    desc: Recent Drupal log messages
+    deps: [':up']
+    cmds:
+      - ddev drush watchdog:show
+
+  xdebug:
+    desc: 'Turn Xdebug on or off, e.g. task be:xdebug -- on'
+    preconditions:
+      - sh: test -n "{{.CLI_ARGS}}"
+        msg: 'Usage: task be:xdebug -- on|off|status'
+    cmds:
+      - ddev xdebug {{.CLI_ARGS}}
+
+  test:
+    desc: 'All PHPUnit suites; extra args go to PHPUnit, e.g. task be:test -- --filter FrontPage'
+    deps: [':up']
+    cmds:
+      - ddev exec vendor/bin/phpunit {{.CLI_ARGS}}
+
+  test:unit:
+    desc: Unit suite
+    deps: [':up']
+    cmds:
+      - ddev exec vendor/bin/phpunit --testsuite unit {{.CLI_ARGS}}
+
+  test:kernel:
+    desc: Kernel suite
+    deps: [':up']
+    cmds:
+      - ddev exec vendor/bin/phpunit --testsuite kernel {{.CLI_ARGS}}
+
+  test:site:
+    desc: ExistingSite suite (Drupal Test Traits, runs against the installed site)
+    deps: [':up']
+    cmds:
+      - ddev exec vendor/bin/phpunit --testsuite existing-site {{.CLI_ARGS}}
+
+  lint:
+    desc: PHP coding standards (phpcs) and static analysis (phpstan)
+    deps: [':up']
+    cmds:
+      - ddev exec vendor/bin/phpcs
+      - ddev exec vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+  lint:fix:
+    desc: Fix what phpcbf can fix automatically
+    deps: [':up']
+    cmds:
+      # phpcbf exits 1 when it fixed files; that is success here.
+      - ddev exec vendor/bin/phpcbf || [ $? -eq 1 ]

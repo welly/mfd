@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="{{THEME}}">
+  <description>Drupal coding standards for custom code (task be:lint).</description>
+  <file>web/modules/custom</file>
+  <file>web/themes/custom</file>
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,info,yml"/>
+  <arg name="colors"/>
+  <arg value="s"/>
+  <!-- Report warnings, but fail only on errors. -->
+  <config name="ignore_warnings_on_exit" value="1"/>
+  <exclude-pattern>*/node_modules/*</exclude-pattern>
+  <rule ref="Drupal"/>
+  <rule ref="DrupalPractice"/>
+</ruleset>

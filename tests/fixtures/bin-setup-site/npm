@@ -1,0 +1,4 @@
+#!/bin/sh
+# Fake `npm`: `task setup` runs `fe:install` (`npm ci`) on its way to `setup:site`. Never
+# actually installs anything; this test only cares about setup:site's backup/restore.
+exit 0

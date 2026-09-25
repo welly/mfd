@@ -1,0 +1,8 @@
+# Environment for PHPUnit inside the web container (task be:test).
+# Kernel tests use the DDEV database with a table prefix; ExistingSite tests
+# (Drupal Test Traits) browse the installed site through the web container.
+web_environment:
+  - SIMPLETEST_DB=mysql://db:db@db/db
+  - SIMPLETEST_BASE_URL=http://web
+  - DTT_BASE_URL=http://web
+  - BROWSERTEST_OUTPUT_DIRECTORY=/var/www/html/web/sites/simpletest/browser_output

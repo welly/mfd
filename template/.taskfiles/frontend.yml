@@ -1,0 +1,52 @@
+# Front-end tasks (fe:*). Each runs an npm script with --if-present, so adding or
+# changing a tool (Vite, PostCSS, Tailwind, TypeScript...) means editing
+# package.json scripts, never this file. A script that does not exist yet is a no-op.
+version: '3'
+
+tasks:
+  install:
+    desc: Install Node dependencies from package-lock.json
+    cmds:
+      - npm ci
+
+  build:
+    desc: Build front-end assets (npm script "build")
+    cmds:
+      - npm run --if-present build -- {{.CLI_ARGS}}
+
+  watch:
+    desc: Rebuild front-end assets on change (npm script "watch")
+    cmds:
+      - npm run --if-present watch -- {{.CLI_ARGS}}
+
+  lint:
+    desc: Lint component and custom-module JS and CSS (npm script "lint")
+    cmds:
+      - npm run --if-present lint -- {{.CLI_ARGS}}
+
+  lint:fix:
+    desc: Fix lint problems where possible (npm script "lint:fix")
+    cmds:
+      - npm run --if-present lint:fix -- {{.CLI_ARGS}}
+
+  test:
+    desc: JavaScript tests (npm script "test:js")
+    cmds:
+      - npm run --if-present test:js -- {{.CLI_ARGS}}
+
+  storybook:
+    desc: Storybook dev server on http://localhost:6006 (npm script "storybook")
+    cmds:
+      - npm run --if-present storybook -- {{.CLI_ARGS}}
+
+  storybook:build:
+    desc: Static Storybook build (npm script "storybook:build")
+    cmds:
+      - npm run --if-present storybook:build -- {{.CLI_ARGS}}
+
+  component:
+    desc: 'Create a Single Directory Component in the theme, e.g. task fe:component -- hero'
+    deps: [':up']
+    cmds:
+      - ddev exec vendor/bin/mfd make:component {{.CLI_ARGS}}
+      - task: ':be:cr'

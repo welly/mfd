@@ -1,0 +1,3 @@
+#!/bin/sh
+# Stand-in for ddev in template tests: tasks depend on `ddev start`. Never starts anything.
+exit 0

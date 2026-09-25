@@ -1,0 +1,28 @@
+{
+    "name": "manifesto/mfd",
+    "description": "Manifesto Drupal toolkit: scaffold Drupal 11 projects with SDC, Storybook, PHPUnit and the mf-harness review tooling, and work in them day to day.",
+    "type": "library",
+    "license": "proprietary",
+    "bin": ["bin/mfd"],
+    "require": {
+        "php": ">=8.3",
+        "symfony/console": "^7.4 || ^8.0",
+        "symfony/process": "^7.4 || ^8.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^12.0",
+        "squizlabs/php_codesniffer": "^3.13 || ^4.0",
+        "symfony/filesystem": "^7.4 || ^8.0"
+    },
+    "autoload": {
+        "psr-4": { "Manifesto\\Mfd\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Manifesto\\Mfd\\Tests\\": "tests/" }
+    },
+    "config": {
+        "platform": { "php": "8.3.0" },
+        "sort-packages": true
+    }
+}
