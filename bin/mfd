@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Manifesto\Mfd\Command\MakeComponentCommand;
+use Manifesto\Mfd\Command\NewCommand;
+use Manifesto\Mfd\Mfd;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Exception\ExceptionInterface as ConsoleException;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+// When mfd is a project dependency, Composer's vendor/bin proxy sets
+// $_composer_autoload_path. From a checkout, use this package's own vendor/.
+$autoload = $GLOBALS['_composer_autoload_path'] ?? dirname(__DIR__) . '/vendor/autoload.php';
+if (!is_string($autoload) || !is_file($autoload)) {
+    fwrite(STDERR, 'error: dependencies are missing. Run `composer install` in ' . dirname(__DIR__) . " first.\n");
+    exit(2);
+}
+require $autoload;
+
+$application = new Application('mfd', Mfd::VERSION);
+foreach ([new NewCommand(), new MakeComponentCommand()] as $command) {
+    // composer.json pins symfony/console to ^7.4 || ^8.0; both have addCommand() (7.4 added it and
+    // deprecated add()), so no method_exists() runtime switch is needed here.
+    $application->addCommand($command);
+}
+$application->setAutoExit(false);
+$application->setCatchExceptions(false);
+
+$output = new ConsoleOutput();
+try {
+    $exitCode = $application->run(new ArgvInput(), $output);
+} catch (ConsoleException $e) {
+    // Unknown options, missing option values and extra arguments are bad input: exit 2.
+    $output->getErrorOutput()->writeln('<error>error:</error> ' . $e->getMessage() . ' (see --help)');
+    $exitCode = 2;
+}
+exit($exitCode);

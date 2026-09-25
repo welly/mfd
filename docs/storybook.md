@@ -16,9 +16,13 @@ The design review keeps two lists of its own:
 
 ## Add a component
 
-Create `components/<name>/<name>.component.yml` and `<name>.twig` in your theme, plus
-`<name>.css` or `<name>.js` if it needs them. Storybook picks it up without any configuration
-change. Place it on a real page and add a site story for it in `qa/stories.ts` when you can.
+Run the scaffolder:
+
+```bash
+task fe:component -- <name>    # Creates a new component, e.g. task fe:component -- hero
+```
+
+This is a wrapper for `ddev exec vendor/bin/mfd make:component <name>`. It creates `components/<name>/<name>.component.yml`, `<name>.twig` and `<name>.css` in your theme. Storybook picks it up without any configuration change. Place it on a real page and add a site story for it in `qa/stories.ts` when you can.
 
 ## Add more stories
 
@@ -96,8 +100,14 @@ Stories run `Drupal.attachBehaviors()`. The review installer's configuration ser
 
 ## Reading review findings
 
-Run `npm run qa:loop` for a full review, or `QA_DEV_CMD='' npm run qa:loop` for the Storybook
-check alone. Findings from the Storybook check carry `sb-<width>` breakpoints.
+Run a review with these commands:
+
+```bash
+task qa:review                # Full design review (Storybook check, then the site check)
+task qa:review:storybook      # Storybook check only; no DDEV needed
+```
+
+Findings from the Storybook check carry `sb-<width>` breakpoints.
 
 | Finding | Severity | Meaning |
 | --- | --- | --- |

@@ -1,0 +1,105 @@
+# Daily tasks for {{SITE_NAME}}. Run `task` to list them.
+# Back end: be:*   Front end: fe:*   Review: qa:*
+version: '3'
+
+vars:
+  THEME: {{THEME}}
+
+includes:
+  be: ./.taskfiles/backend.yml
+  fe: ./.taskfiles/frontend.yml
+  qa: ./.taskfiles/qa.yml
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task --list
+
+  up:
+    desc: Start the DDEV site (http://{{PROJECT}}.ddev.site)
+    cmds:
+      - ddev start
+
+  down:
+    desc: Stop the DDEV site
+    cmds:
+      - ddev stop
+
+  setup:
+    desc: 'Get a fresh clone running. Optional database dump: DB=path/to/dump.sql.gz task setup'
+    cmds:
+      - task: up
+      - task: be:install
+      - task: fe:install
+      - task: setup:site
+
+  setup:site:
+    internal: true
+    cmds:
+      - |
+        if [ -n "{{.DB}}" ]; then
+          ddev import-db --file="{{.DB}}"
+          ddev drush deploy -y
+        else
+          # site:install can rewrite real secrets straight into the committed settings.php
+          # (Drupal's installer nondeterministically runs install_settings_form). Back it up
+          # first and restore it whatever happens, so the file you review and commit never ends up dirty.
+          # The backup itself must fail closed: if it doesn't succeed, the install must not run
+          # against a file this script would then have no way to restore.
+          settings_file="web/sites/default/settings.php"
+          backup_file="$(mktemp)"
+          cp "$settings_file" "$backup_file" || {
+            rm -f "$backup_file"
+            echo "error: could not back up $settings_file" >&2
+            exit 1
+          }
+          trap 'rm -f "$backup_file"' EXIT
+          status=0
+          ddev drush site:install --existing-config -y || status=$?
+          changed=0
+          cmp -s "$settings_file" "$backup_file" || changed=1
+          # The restore runs as one grouped command. Task runs this script with errexit: a bare
+          # failing command here (the chmod, either cp, the final cmp) would abort the script
+          # mid-restore and let the `trap` above delete the last clean copy of settings.php on
+          # its way out, exactly when it is needed most. Grouping with && inside { } and falling
+          # through to || keeps the whole restore exempt from errexit (a command that is not the
+          # last element of an && / || list never triggers it), so any failure in it is caught
+          # here instead of the script aborting underneath it.
+          { chmod u+w "$settings_file" && cp "$backup_file" "$settings_file" && chmod 0644 "$settings_file" \
+            && cmp -s "$settings_file" "$backup_file"; } || {
+            trap - EXIT
+            echo "error: could not restore $settings_file; it may contain secrets, do not commit it." \
+              "Clean copy kept at $backup_file" >&2
+            exit 1
+          }
+          if [ "$changed" -eq 1 ]; then
+            echo "warning: site:install changed $settings_file; restored the committed version" >&2
+          fi
+          exit "$status"
+        fi
+
+  dev:
+    desc: Start the site, then the front-end watcher and Storybook together
+    cmds:
+      - task: up
+      - task: dev:watch
+
+  dev:watch:
+    internal: true
+    deps: [fe:watch, fe:storybook]
+
+  check:
+    desc: The full local check before a pull request
+    cmds:
+      - task: be:lint
+      - task: fe:lint
+      - task: be:test
+      - task: fe:build
+      - task: qa:review
+        ignore_error: true
+
+  drush:
+    desc: 'Run Drush in DDEV, e.g. task drush -- status'
+    cmds:
+      - ddev drush {{.CLI_ARGS}}

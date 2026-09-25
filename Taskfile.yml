@@ -1,0 +1,32 @@
+# Tasks for developing mfd itself. Run `task` to list them.
+version: '3'
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task --list
+
+  install:
+    desc: Install dependencies and put mfd on your PATH (~/.local/bin/mfd)
+    cmds:
+      - composer install
+      - mkdir -p "$HOME/.local/bin"
+      - ln -sf "$PWD/bin/mfd" "$HOME/.local/bin/mfd"
+      - echo "mfd linked to ~/.local/bin/mfd. Make sure ~/.local/bin is on your PATH."
+
+  test:
+    desc: Fast tests (no Docker needed)
+    cmds:
+      - vendor/bin/phpunit
+
+  lint:
+    desc: Coding standards (PSR-12) and static analysis (phpstan level 8)
+    cmds:
+      - vendor/bin/phpcs
+      - vendor/bin/phpstan analyse --no-progress
+
+  e2e:
+    desc: Slow end-to-end run against real DDEV (needs Docker and the harness)
+    cmds:
+      - vendor/bin/phpunit --testsuite e2e

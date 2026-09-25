@@ -1,0 +1,8 @@
+parameters:
+  level: 8
+  paths:
+    - bin/mfd
+    - src
+    - tests
+  excludePaths:
+    - tests/fixtures

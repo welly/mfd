@@ -1,0 +1,6 @@
+name: {{THEME}} tests
+type: module
+description: 'Holds the project example tests. No runtime code; never needs enabling.'
+package: Testing
+core_version_requirement: ^11
+hidden: true

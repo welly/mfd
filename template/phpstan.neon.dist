@@ -1,0 +1,7 @@
+# Static analysis for custom code (task be:lint). phpstan-drupal is loaded by
+# phpstan/extension-installer. Raise the level as the codebase grows.
+parameters:
+  level: 1
+  paths:
+    - web/modules/custom
+    - web/themes/custom
