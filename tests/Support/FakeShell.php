@@ -54,7 +54,7 @@ final class FakeShell implements Shell
     /** Content of settings.php the moment `site:install` was called, before any leak side effect. */
     public ?string $settingsPhpAtSiteInstall = null;
 
-    /** @var list<string> */
+    /** @var array<string, ?string> needle => stderr to fail with (null: a generic message) */
     private array $failures = [];
     /** @var list<string> */
     private array $missingTools = [];
@@ -81,10 +81,10 @@ final class FakeShell implements Shell
 
         PHP;
 
-    /** Any command whose joined line contains $needle fails with exit code 1. */
-    public function failOn(string $needle): void
+    /** Any command whose joined line contains $needle fails with exit code 1 and $errorOutput as stderr. */
+    public function failOn(string $needle, ?string $errorOutput = null): void
     {
-        $this->failures[] = $needle;
+        $this->failures[$needle] = $errorOutput;
     }
 
     public function clearFailures(): void
@@ -143,9 +143,9 @@ final class FakeShell implements Shell
             $settingsFile = $cwd . '/web/sites/default/settings.php';
             $this->settingsPhpAtFirstDdevCall = is_file($settingsFile) ? (string) file_get_contents($settingsFile) : '';
         }
-        foreach ($this->failures as $needle) {
-            if (str_contains($line, $needle)) {
-                throw new CommandFailed($command, 1, 'fake failure for: ' . $line);
+        foreach ($this->failures as $needle => $errorOutput) {
+            if (str_contains($line, (string) $needle)) {
+                throw new CommandFailed($command, 1, $errorOutput ?? 'fake failure for: ' . $line);
             }
         }
 

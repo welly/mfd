@@ -21,7 +21,7 @@ final class ToolkitStepTest extends NewCommandTestCase
 
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay());
         self::assertContains(
-            'ddev composer config --no-interaction repositories.mfd vcs https://github.com/welly/drupal-starter',
+            'ddev composer config --no-interaction repositories.mfd vcs https://github.com/welly/mfd',
             $this->shell->calls,
         );
         self::assertContains(
@@ -68,6 +68,36 @@ final class ToolkitStepTest extends NewCommandTestCase
         );
     }
 
+    public function testTheWarningShowsComposersErrorBoxNotTheUsageLine(): void
+    {
+        // Real stderr from `ddev composer require` while manifesto/mfd was not yet on main (2026-09-25).
+        $this->shell->failOn('manifesto/mfd', implode("\n", [
+            'Composer [require --dev --no-interaction manifesto/mfd:dev-main] failed, composer command failed: '
+                . 'exit status 1. stderr=./composer.json has been updated',
+            'Running composer update manifesto/mfd',
+            'Loading composer repositories with package information',
+            '',
+            'Installation failed, reverting ./composer.json and ./composer.lock to their original content.',
+            '',
+            'In VcsRepository.php line 423:',
+            '                                                                               ',
+            '  No valid composer.json was found in any branch or tag of https://github.com  ',
+            '  /welly/drupal-starter, could not load a package from it.                     ',
+            '                                                                               ',
+            '',
+            'require [--dev] [--dry-run] [--prefer-source] [--prefer-dist] [--] [<packages>...]',
+            '',
+        ]));
+        $display = $this->newProject(['name' => 'acme'], [new ToolkitStep()])->getDisplay();
+
+        self::assertStringContainsString(
+            '(No valid composer.json was found in any branch or tag of https://github.com/welly/drupal-starter, '
+                . 'could not load a package from it.)',
+            $display,
+        );
+        self::assertStringNotContainsString('[--dry-run]', $display);
+    }
+
     public function testAFailingComposerConfigCallAlsoWarnsWithTheReason(): void
     {
         $this->shell->failOn('repositories.mfd');
@@ -78,7 +108,7 @@ final class ToolkitStepTest extends NewCommandTestCase
         self::assertStringContainsString('ddev composer require --dev manifesto/mfd:dev-main', $display);
         self::assertStringContainsString(
             'fake failure for: ddev composer config --no-interaction repositories.mfd vcs '
-                . 'https://github.com/welly/drupal-starter',
+                . 'https://github.com/welly/mfd',
             $display,
         );
     }
