@@ -9,7 +9,7 @@ A Symfony Console tool that creates a Drupal 11 project with Single Directory Co
 `mfd` is not on Packagist, so tell Composer where it lives first, then require it. There is no tagged release yet, so ask for `dev-main`:
 
 ```bash
-composer global config repositories.mfd vcs https://github.com/welly/drupal-starter
+composer global config repositories.mfd vcs https://github.com/welly/mfd
 composer global require --with-all-dependencies manifesto/mfd:dev-main
 ```
 
@@ -22,7 +22,7 @@ mfd new "Acme Corp"
 ### Option 2: clone and symlink (for developing mfd)
 
 ```bash
-git clone https://github.com/welly/drupal-starter.git ~/tools/mfd
+git clone https://github.com/welly/mfd.git ~/tools/mfd
 cd ~/tools/mfd && task install     # composer install + symlink ~/.local/bin/mfd
 ```
 
@@ -116,7 +116,7 @@ input at all (for example a label starting with a digit), supply one explicitly 
 
 | Variable | Purpose |
 | --- | --- |
-| `MFD_REPOSITORY` | Git repository URL for `mfd` itself. Default: `https://github.com/welly/drupal-starter`. Override to test a branch. |
+| `MFD_REPOSITORY` | Git repository URL for `mfd` itself. Default: `https://github.com/welly/mfd`. Override to test a branch. |
 | `MFD_VERSION` | Version constraint for `mfd` in the generated project. Default: `dev-main`. Override to pin a release. |
 | `QA_INIT` | Path to the mf-harness `qa-init.sh` installer. Default: `~/.claude/skills/design-review/scaffold/qa-init.sh`. Override if your harness is elsewhere. |
 | `HARNESS_PROBE` | Path to the mf-harness setup probe. Default: `~/.claude/lib/setup_project_probe.py`. Override if your harness is elsewhere. |

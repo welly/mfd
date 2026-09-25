@@ -400,7 +400,7 @@ $path = $root->path('web/themes/custom/' . $theme);
 
 Used by the tool itself:
 
-- `MFD_REPOSITORY`: Git repository URL for `mfd` (default: `https://github.com/welly/drupal-starter`). Override to test a branch.
+- `MFD_REPOSITORY`: Git repository URL for `mfd` (default: `https://github.com/welly/mfd`). Override to test a branch.
 - `MFD_VERSION`: Version constraint for `mfd` in the generated project (default: `dev-main`). Override to pin a release.
 - `QA_INIT`: Path to the mf-harness `qa-init.sh` installer (default: `~/.claude/skills/design-review/scaffold/qa-init.sh`). Override if your harness is elsewhere.
 - `HARNESS_PROBE`: Path to the mf-harness setup probe (default: `~/.claude/lib/setup_project_probe.py`). Override if your harness is elsewhere.

@@ -26,7 +26,7 @@ Success means:
 | Topic | Decision |
 | --- | --- |
 | Delivery | This repository is `mfd`, a PHP command-line toolkit. `mfd new` scaffolds a project once; in-project commands such as `mfd make:component` are used daily. The generated project gets a `Taskfile.yml` for daily work, which calls `mfd` where it needs it. |
-| Distribution | Both: engineers install `mfd` once per machine to run `mfd new`; `mfd new` also adds `manifesto/mfd` to each project's `require-dev` (VCS repository `https://github.com/welly/drupal-starter`), so every teammate gets the same locked version through `composer install` and runs it inside DDEV. |
+| Distribution | Both: engineers install `mfd` once per machine to run `mfd new`; `mfd new` also adds `manifesto/mfd` to each project's `require-dev` (VCS repository `https://github.com/welly/mfd`), so every teammate gets the same locked version through `composer install` and runs it inside DDEV. |
 | Harness depth | The scaffolder runs only the harness steps that touch local files. Everything else (MCP, Figma token, readiness audit, Figma map, enrolment, docs config) stays with `/setup-project` in Claude Code, which skips steps that are already done. |
 | PHPUnit | Three suites: Unit, Kernel and ExistingSite (Drupal Test Traits). |
 | Storybook | Always installed and enabled, with no opt-out. |
@@ -163,7 +163,7 @@ failure resumes the run. Each step logs `==> <step>` and either `done` or `skipp
    suggestion that includes the card just before the main content, so the site story checks a
    real render.
 6. **Toolkit:** add the VCS repository and `require-dev manifesto/mfd` to the project with
-   `ddev composer`. Source defaults to `https://github.com/welly/drupal-starter` at `dev-main`;
+   `ddev composer`. Source defaults to `https://github.com/welly/mfd` at `dev-main`;
    `MFD_REPOSITORY` and `MFD_VERSION` override it (forks, branches). If Composer cannot install
    it (offline, or the package not yet on that branch), the step warns and prints the exact
    command to run later instead of failing an otherwise complete project; the summary repeats
