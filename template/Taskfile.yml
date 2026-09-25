@@ -20,6 +20,8 @@ tasks:
     desc: Start the DDEV site (http://{{PROJECT}}.ddev.site)
     cmds:
       - ddev start
+    status:
+      - ddev exec true >/dev/null 2>&1
 
   down:
     desc: Stop the DDEV site
